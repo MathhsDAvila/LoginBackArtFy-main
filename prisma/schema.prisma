@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model user {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  email        String   @db.VarChar(255) @unique
+  pass         String   @db.VarChar(255)
+  cpf          String   @db.VarChar(14) @unique
+  birthDate    DateTime
+  address      String   @db.VarChar(255)
+  phone        String   @db.VarChar(20)
+  role         Role     @default(USER)
+  sessions     session[]
+}
+
+model session {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  client    String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
